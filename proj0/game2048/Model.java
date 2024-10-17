@@ -1,11 +1,12 @@
 package game2048;
 
 import java.util.Formatter;
+import java.util.Iterator;
 import java.util.Observable;
 
 
 /** The state of a game of 2048.
- *  @author TODO: YOUR NAME HERE
+ *  @author StreamAzure
  */
 public class Model extends Observable {
     /** Current contents of the board. */
@@ -110,9 +111,22 @@ public class Model extends Observable {
         boolean changed;
         changed = false;
 
-        // TODO: Modify this.board (and perhaps this.score) to account
-        // for the tilt to the Side SIDE. If the board changed, set the
-        // changed local variable to true.
+        board.setViewingPerspective(side);
+
+        int scoreSum = 0;
+        // 默认为向上移动
+        // 注意默认棋盘方向下，最底下一行 row = 0，最右侧一列 col = 3
+        for (int col = 0; col < board.size(); col ++){
+            int res = handleCol(col);
+            if (res != -1){
+                changed = true;
+            }
+            if (res > 1) {
+                scoreSum += res;
+            }
+        }
+        board.setViewingPerspective(Side.NORTH);
+        score += scoreSum;
 
         checkGameOver();
         if (changed) {
@@ -120,6 +134,53 @@ public class Model extends Observable {
         }
         return changed;
     }
+
+    private int handleCol(int col) {
+        int colScore = 0;
+        int changed = -1;
+        boolean[] merged = {false, false, false, false};
+        for (int i = board.size() - 1; i >= 0; i--) {
+            // 从最顶上的 tile 开始向下考虑
+            Tile nowTile = board.tile(col, i);
+            if (nowTile == null) {
+                continue;
+            }
+            int nearestTile = getNearestTile(i, col);
+            if (nearestTile == -1 && i != board.size() - 1) {
+                // 不是最顶上的方块，且上面没有方块，直接移动到最顶上
+                board.move(col, board.size() - 1, nowTile);
+                changed = 1;
+            } // 如果是最顶上的方块，不考虑
+            else if (nearestTile != -1) {
+                // 上面有方块
+                Tile otherTile = board.tile(col, nearestTile);
+                if (otherTile.value() == nowTile.value() && !merged[nearestTile]) {
+                    // 值相同，且目标位置没有发生过合并，压上去合并
+                    if (board.move(col, nearestTile, nowTile)){
+                        colScore += board.tile(col, nearestTile).value();
+                        merged[nearestTile] = true;
+                    }
+                } else {
+                    // 值不同，不紧邻，则中间有空位，贴在 otherTile 的下一行
+                    board.move(col, nearestTile - 1, nowTile);
+                }
+                changed = 1;
+            }
+        }
+        return colScore > 0 ? colScore : changed;
+    }
+
+    private int getNearestTile(int row, int col){
+        // 向上方向最近的 tile 的所在行
+        // 若返回 -1， 则向上方向无 tile
+        for (int i = row + 1; i < board.size(); i++) {
+            if (board.tile(col, i) != null) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
 
     /** Checks if the game is over and sets the gameOver variable
      *  appropriately.
@@ -137,7 +198,11 @@ public class Model extends Observable {
      *  Empty spaces are stored as null.
      * */
     public static boolean emptySpaceExists(Board b) {
-        // TODO: Fill in this function.
+        for (Tile tile : b) {
+            if (tile == null) {
+                return true;
+            }
+        }
         return false;
     }
 
@@ -147,7 +212,11 @@ public class Model extends Observable {
      * given a Tile object t, we get its value with t.value().
      */
     public static boolean maxTileExists(Board b) {
-        // TODO: Fill in this function.
+        for (Tile tile : b) {
+            if (tile != null && tile.value() == MAX_PIECE){
+                return true;
+            }
+        }
         return false;
     }
 
@@ -158,7 +227,27 @@ public class Model extends Observable {
      * 2. There are two adjacent tiles with the same value.
      */
     public static boolean atLeastOneMoveExists(Board b) {
-        // TODO: Fill in this function.
+        for (Tile tile : b){
+            if (tile == null) {
+                return true;
+            }
+            int[] dx = {0, 0, 1, -1};
+            int[] dy = {1, -1, 0, 0};
+            for (int i = 0; i < 4; i++){
+                int nx = tile.col() + dx[i];
+                int ny = tile.row() + dy[i];
+                if (nx >= b.size() || ny >= b.size() || nx < 0 || ny < 0){
+                    continue;
+                }
+                if (b.tile(nx, ny) != null){
+                  if (b.tile(nx, ny ).value() == tile.value()){
+                      return true;
+                  }
+                } else {
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
