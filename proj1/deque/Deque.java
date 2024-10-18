@@ -11,6 +11,12 @@ public interface Deque<T> {
         return size() == 0;
     }
 
+    T removeFirst();
+
+    T removeLast();
+
+    T get(int index);
+
     int size();
 
     void printDeque();
