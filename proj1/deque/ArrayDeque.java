@@ -1,10 +1,8 @@
 package deque;
 
-import afu.org.checkerframework.checker.oigj.qual.O;
-
 import java.util.Iterator;
 
-public class ArrayDeque<T> implements Iterable<T> {
+public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
     /**
      * 由于总是在首尾添加和删除元素，不用考虑中间元素删除的情况
      */
@@ -16,6 +14,10 @@ public class ArrayDeque<T> implements Iterable<T> {
 
     private double usage;
 
+    private static final double EXPANSION_RATE = 1.5;
+
+    private static final int MIN_ITEMS_LENGTH = 16;
+
     public ArrayDeque() {
         nextFirst = 0;
         nextLast = 1;
@@ -24,19 +26,21 @@ public class ArrayDeque<T> implements Iterable<T> {
 
     public void resize(int capacity) {
         T[] a = (T[]) new Object[capacity];
-        int i = nextFirst % items.length;
+        int i = (nextFirst + 1) % items.length;
         while (i < nextLast) {
-            i %= a.length;
-            a[i] = items[i];
-            i ++;
+            i %= items.length;
+            a[i % capacity] = items[i];
+            i++;
         }
-        usage = size % items.length;
+        usage = (double) size / items.length;
         items = a;
+        nextFirst = nextFirst % capacity;
+        nextLast = nextLast % capacity;
     }
 
     public void addFirst(T x) {
         if (size == items.length - 2) {
-            resize((int)(size * 1.01));
+            resize((int) (size * EXPANSION_RATE));
         }
         items[nextFirst] = x;
         nextFirst = getPreIdx(nextFirst);
@@ -45,7 +49,7 @@ public class ArrayDeque<T> implements Iterable<T> {
 
     public void addLast(T x) {
         if (size == items.length - 2) {
-            resize((int)(size * 1.01));
+            resize((int) (size * EXPANSION_RATE));
         }
         items[nextLast] = x;
         nextLast = getNextIdx(nextLast);
@@ -61,8 +65,8 @@ public class ArrayDeque<T> implements Iterable<T> {
         nextFirst = getNextIdx(nextFirst);
         size -= 1;
 
-        if (items.length / size >= 4 && items.length > 16) {
-            resize((int)(items.length / 4));
+        if (size > MIN_ITEMS_LENGTH && items.length / 3 > size) {
+            resize((int) (items.length / 3));
         }
         return deleteItem;
     }
@@ -75,14 +79,10 @@ public class ArrayDeque<T> implements Iterable<T> {
         items[getPreIdx(nextLast)] = null;
         nextLast = getPreIdx(nextLast);
         size -= 1;
-        if (size > 16 && items.length / size >= 4) {
-            resize((int)(items.length / 4));
+        if (size > MIN_ITEMS_LENGTH && items.length / 3 > size) {
+            resize((int) (items.length / 3));
         }
         return deleteItem;
-    }
-
-    public boolean isEmpty() {
-        return size == 0;
     }
 
     public int size() {
@@ -100,6 +100,10 @@ public class ArrayDeque<T> implements Iterable<T> {
         return items[(nextFirst + index + 1) % items.length];
     }
 
+    public boolean equals(Object o) {
+        return o instanceof Deque;
+    }
+
     /**
      * 获得数组下标为 index 的元素的下一个元素的数组下标
      */
@@ -111,7 +115,7 @@ public class ArrayDeque<T> implements Iterable<T> {
      * 获得数组下标为 index 的元素的上一个元素的数组下标
      */
     private int getPreIdx(int index) {
-        return (index - 1) % items.length;
+        return ((index - 1) + items.length) % items.length;
     }
 
     public double getUsage() {

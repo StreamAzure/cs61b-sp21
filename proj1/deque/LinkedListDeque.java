@@ -2,7 +2,7 @@ package deque;
 
 import java.util.Iterator;
 
-public class LinkedListDeque<T> implements Iterable<T> {
+public class LinkedListDeque<T> implements Iterable<T>, Deque<T> {
 
     private class Node {
         private T item;
@@ -19,6 +19,8 @@ public class LinkedListDeque<T> implements Iterable<T> {
     private Node headSentinel;
     private Node tailSentinel;
 
+    private Node nodeForRecursive;
+
     private int size;
 
     public LinkedListDeque() {
@@ -26,6 +28,7 @@ public class LinkedListDeque<T> implements Iterable<T> {
         this.tailSentinel = new Node(null, null, null);
         headSentinel.next = tailSentinel;
         tailSentinel.prev = headSentinel;
+        nodeForRecursive = headSentinel.next;
     }
 
     public void addFirst(T item) {
@@ -35,6 +38,7 @@ public class LinkedListDeque<T> implements Iterable<T> {
         node.next.prev = node;
         headSentinel.next = node;
         size += 1;
+        nodeForRecursive = headSentinel.next;
     }
 
     public void addLast(T item) {
@@ -44,10 +48,6 @@ public class LinkedListDeque<T> implements Iterable<T> {
         node.prev.next = node;
         tailSentinel.prev = node;
         size += 1;
-    }
-
-    public boolean isEmpty() {
-        return this.size == 0;
     }
 
     public int size() {
@@ -82,6 +82,7 @@ public class LinkedListDeque<T> implements Iterable<T> {
         headSentinel.next = deletedNode.next;
         headSentinel.next.prev = headSentinel;
         size -= 1;
+        nodeForRecursive = headSentinel.next;
         return deletedNode.item;
     }
 
@@ -94,6 +95,24 @@ public class LinkedListDeque<T> implements Iterable<T> {
         tailSentinel.prev.next = tailSentinel;
         size -= 1;
         return deletedNode.item;
+    }
+
+    public T getRecursive(int index) {
+        if (nodeForRecursive == tailSentinel) {
+            nodeForRecursive = headSentinel.next;
+            return null;
+        }
+        if (index == 0) {
+            T result = nodeForRecursive.item;
+            nodeForRecursive = headSentinel.next;
+            return result;
+        }
+        nodeForRecursive = nodeForRecursive.next;
+        return getRecursive(index - 1);
+    }
+
+    public boolean equals(Object o) {
+        return o instanceof Deque;
     }
 
     @Override

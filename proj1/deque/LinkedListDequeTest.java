@@ -15,8 +15,7 @@ public class LinkedListDequeTest {
     public void addIsEmptySizeTest() {
 
         LinkedListDeque<String> lld1 = new LinkedListDeque<String>();
-
-		assertTrue("A newly initialized LLDeque should be empty", lld1.isEmpty());
+        assertTrue("A newly initialized LLDeque should be empty", lld1.isEmpty());
 		lld1.addFirst("front");
 
 		// The && operator is the same as "and" in Python.
@@ -141,6 +140,12 @@ public class LinkedListDequeTest {
         linkedListDeque.addFirst(2);
         linkedListDeque.addFirst(4);
         linkedListDeque.addLast(5);
+        linkedListDeque.removeFirst();
+        linkedListDeque.removeLast();
         // 4 2 1 5
+        for (int i = 0; i < 4; i++) {
+            Integer kk = linkedListDeque.getRecursive(i);
+            System.out.println(kk);
+        }
     }
 }

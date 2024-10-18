@@ -1,6 +1,5 @@
 package deque;
 
-import afu.org.checkerframework.checker.igj.qual.I;
 import edu.princeton.cs.algs4.StdRandom;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -32,9 +31,40 @@ public class ArrayDequeTest {
         ad1.addLast(19);
         ad1.addFirst(20);
         ad1.addLast(21);
-        assertEquals(20, (int)ad1.removeFirst());
-        assertEquals(21, (int)ad1.removeLast());
+        assertEquals(20, (int) ad1.removeFirst());
+        assertEquals(21, (int) ad1.removeLast());
         ad1.printDeque();
+    }
+
+    @Test
+    public void resizeTest() {
+        ArrayDeque<Integer> ad1 = new ArrayDeque<>();
+        int N = 1000000;
+        int cnt = 0;
+        for (int i = 0; i < N; i++) {
+            int operationNumber = StdRandom.uniform(0, 4);
+            if (operationNumber == 0) {
+                int randVal = StdRandom.uniform(0, 100);
+                ad1.addLast(randVal);
+                cnt += 1;
+            }  else if (operationNumber == 1) {
+                int randVal = StdRandom.uniform(0, 100);
+                ad1.addFirst(randVal);
+                cnt += 1;
+            }  else if (operationNumber == 2) {
+                if (!ad1.isEmpty()) {
+                    ad1.removeLast();
+                    cnt -= 1;
+                }
+            }  else if (operationNumber == 3) {
+                if (!ad1.isEmpty()) {
+                    ad1.removeFirst();
+                    cnt -= 1;
+                }
+            }
+            assertEquals(cnt, ad1.size());
+            System.out.println(ad1.getUsage());
+        }
     }
 
     @Test
