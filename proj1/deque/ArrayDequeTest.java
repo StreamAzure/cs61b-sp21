@@ -93,4 +93,29 @@ public class ArrayDequeTest {
         }
     }
 
+    @Test
+    public void multipleAddTest() {
+        ArrayDeque<Integer> ad1 = new ArrayDeque<>();
+        int len = 1000000;
+        int[] test = new int[len];
+        for (int i = 0; i < len; i++){
+            int randInt = StdRandom.uniform(0, 100);
+            test[i] = randInt;
+            ad1.addLast(randInt);
+        }
+        assertEquals(len, ad1.size());
+        for (int i = 0; i < len; i++){
+            Integer result = ad1.removeFirst();
+            assertNotNull(result);
+            assertEquals(len-i-1, ad1.size());
+//            System.out.println(ad1.removeFirst());
+        }
+        assertTrue(ad1.isEmpty());
+        for (int i = 0; i < len; i++){
+            int randInt = StdRandom.uniform(0, 100);
+            test[i] = randInt;
+            ad1.addFirst(randInt);
+        }
+    }
+
 }
