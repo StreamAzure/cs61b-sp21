@@ -1,0 +1,66 @@
+package deque;
+
+import afu.org.checkerframework.checker.igj.qual.I;
+import edu.princeton.cs.algs4.StdRandom;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
+public class ArrayDequeTest {
+
+    @Test
+    public void addIsEmptySizeTest() {
+        ArrayDeque<String> ad1 = new ArrayDeque<>();
+        assertTrue(ad1.isEmpty());
+
+        ad1.addFirst("front");
+
+        assertEquals(1, ad1.size());
+        assertFalse(ad1.isEmpty());
+
+        ad1.addLast("middle");
+        assertEquals(2, ad1.size());
+
+        ad1.addLast("back");
+        assertEquals(3, ad1.size());
+
+        ad1.printDeque();
+    }
+
+    @Test
+    public void addRemoveTest() {
+        ArrayDeque<Integer> ad1 = new ArrayDeque<>();
+        ad1.addLast(19);
+        ad1.addFirst(20);
+        ad1.addLast(21);
+        assertEquals(20, (int)ad1.removeFirst());
+        assertEquals(21, (int)ad1.removeLast());
+        ad1.printDeque();
+    }
+
+    @Test
+    public void randomizedTest() {
+        ArrayDeque<Integer> ad1 = new ArrayDeque<>();
+
+        int N = 5000;
+        for (int i = 0; i < N; i += 1) {
+            int operationNumber = StdRandom.uniform(0, 4);
+            if (operationNumber == 0) {
+                // addLast
+                int randVal = StdRandom.uniform(0, 100);
+                ad1.addLast(randVal);
+                System.out.println("addLast(" + randVal + ")");
+            } else if (operationNumber == 1) {
+                // size
+                int size1 = ad1.size();
+                System.out.println("size: " + size1);
+            } else if (operationNumber == 3) {
+                // removeLast
+                if (!ad1.isEmpty()) {
+                    Integer i2 = ad1.removeLast();
+                    System.out.println("removeLast: " + i2);
+                }
+            }
+        }
+    }
+
+}
