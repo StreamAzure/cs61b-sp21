@@ -63,7 +63,6 @@ public class ArrayDequeTest {
                 }
             }
             assertEquals(cnt, ad1.size());
-            System.out.println(ad1.getUsage());
         }
     }
 

@@ -1,5 +1,6 @@
 package deque;
 
+import edu.princeton.cs.algs4.StdRandom;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -136,16 +137,40 @@ public class LinkedListDequeTest {
     @Test
     public void getRecursiveTest() {
         LinkedListDeque<Integer> linkedListDeque = new LinkedListDeque<>();
-        linkedListDeque.addFirst(1);
-        linkedListDeque.addFirst(2);
-        linkedListDeque.addFirst(4);
-        linkedListDeque.addLast(5);
-        linkedListDeque.removeFirst();
-        linkedListDeque.removeLast();
-        // 4 2 1 5
-        for (int i = 0; i < 4; i++) {
-            Integer kk = linkedListDeque.getRecursive(i);
-            System.out.println(kk);
+        int N = 100000;
+        for (int i = 0; i < N; i++) {
+            int opNumber = StdRandom.uniform(0,5);
+            if (opNumber == 0) {
+                int ranVar = StdRandom.uniform(100);
+                linkedListDeque.addLast(ranVar);
+            } else if (opNumber == 1) {
+                int ranVar = StdRandom.uniform(100);
+                linkedListDeque.addFirst(ranVar);
+            } else if (opNumber == 2) {
+                linkedListDeque.removeLast();
+            } else if (opNumber == 3) {
+                linkedListDeque.removeFirst();
+            } else if (opNumber == 4) {
+                if (linkedListDeque.isEmpty()){
+                    continue;
+                }
+                int ranIdx = StdRandom.uniform(0, linkedListDeque.size());
+                int v1 = linkedListDeque.get(ranIdx);
+                int v2 = linkedListDeque.getRecursive(ranIdx);
+                assertNotNull(v2);
+                assertEquals(v1, v2);
+            }
         }
+//        linkedListDeque.addFirst(1);
+//        linkedListDeque.addFirst(2);
+//        linkedListDeque.addFirst(4);
+//        linkedListDeque.addLast(5);
+//        linkedListDeque.removeFirst();
+//        linkedListDeque.removeLast();
+//        // 4 2 1 5
+//        for (int i = 0; i < 4; i++) {
+//            Integer kk = linkedListDeque.getRecursive(i);
+//            System.out.println(kk);
+//        }
     }
 }

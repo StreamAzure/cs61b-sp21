@@ -12,11 +12,9 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
     private T[] items = (T[]) new Object[8];
     private int size;
 
-    private double usage;
-
     private static final double EXPANSION_RATE = 1.5;
 
-    private static final int MIN_ITEMS_LENGTH = 16;
+    private static final int MIN_ITEMS_LENGTH = 8;
 
     public ArrayDeque() {
         nextFirst = 0;
@@ -24,7 +22,7 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
         size = 0;
     }
 
-    public void resize(int capacity) {
+    private void resize(int capacity) {
         T[] a = (T[]) new Object[capacity];
         int i = (nextFirst + 1) % items.length;
         int j = 0;
@@ -33,7 +31,6 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
             i = (i + 1) % items.length;
             j++;
         }
-        usage = (double) size / items.length;
         items = a;
         nextFirst = capacity - 1;
         nextLast = j;
@@ -102,7 +99,18 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
     }
 
     public boolean equals(Object o) {
-        return o instanceof Deque;
+        if (!(o instanceof Deque)) {
+            return false;
+        }
+        if (((Deque<?>) o).size() != size()) {
+            return false;
+        }
+        for (int i = 0; i < ((Deque<?>) o).size(); i++) {
+            if (!((Deque<?>) o).get(i).equals(get(i))) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -119,10 +127,6 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
         return ((index - 1) + items.length) % items.length;
     }
 
-    public double getUsage() {
-        return usage;
-    }
-
     @Override
     public Iterator<T> iterator() {
         return new ArrayDequeIterator();
@@ -130,7 +134,7 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
 
     private class ArrayDequeIterator implements Iterator<T> {
         private int nowIdx;
-        public ArrayDequeIterator() {
+        ArrayDequeIterator() {
             nowIdx = nextFirst;
         }
         @Override
