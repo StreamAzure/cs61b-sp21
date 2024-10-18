@@ -27,15 +27,16 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
     public void resize(int capacity) {
         T[] a = (T[]) new Object[capacity];
         int i = (nextFirst + 1) % items.length;
-        while (i < nextLast) {
-            i %= items.length;
-            a[i % capacity] = items[i];
-            i++;
+        int j = 0;
+        while (i != nextLast) {
+            a[j] = items[i];
+            i = (i + 1) % items.length;
+            j++;
         }
         usage = (double) size / items.length;
         items = a;
-        nextFirst = nextFirst % capacity;
-        nextLast = nextLast % capacity;
+        nextFirst = capacity - 1;
+        nextLast = j;
     }
 
     public void addFirst(T x) {
