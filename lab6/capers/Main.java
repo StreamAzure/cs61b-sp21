@@ -1,11 +1,15 @@
 package capers;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.Arrays;
 
+import static capers.Dog.DOG_FOLDER;
 import static capers.Utils.*;
 
 /** Canine Capers: A Gitlet Prelude.
- * @author TODO
+ * @author StreamAzure
 */
 public class Main {
     /**
@@ -36,7 +40,7 @@ public class Main {
      *
      * @param args arguments from the command line
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         if (args.length == 0) {
             Utils.exitWithError("Must have at least one argument");
         }
@@ -52,11 +56,15 @@ public class Main {
             break;
         case "dog":
             validateNumArgs("dog", args, 4);
-            // TODO: make a dog
+            String name = args[1];
+            String breed = args[2];
+            int age = Integer.parseInt(args[3]);
+            CapersRepository.makeDog(name, breed, age);
             break;
         case "birthday":
             validateNumArgs("birthday", args, 2);
-            // TODO: celebrate this dog's birthday
+            String dogName = args[1];
+            CapersRepository.celebrateBirthday(dogName);
             break;
         default:
             exitWithError(String.format("Unknown command: %s", args[0]));
